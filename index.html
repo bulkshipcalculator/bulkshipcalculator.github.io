@@ -36,29 +36,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>Date, Tonnage, and Gangs Difference Calculator</h1>
+        <h1>Bulk Ship Tonnage Calculator</h1>
+	
         
-        <label for="date1">Enter the first date:</label>
+        <label for="date1">Start Time:</label>
         <input type="datetime-local" id="date1">
         
-        <label for="date2">Enter the second date:</label>
-        <input type="datetime-local" id="date2">
-        
-        <label for="tonnage1">Enter the start tonnage:</label>
+	<label for="tonnage1">Start Tonnage:</label>
         <input type="number" id="tonnage1" step="any" placeholder="0.0">
         
-        <label for="tonnage2">Enter the finish tonnage:</label>
+	<label for="date2">Latest Tonnage Update Time:</label>
+        <input type="datetime-local" id="date2">        
+            
+        <label for="tonnage2">Latest Tonnage:</label>
         <input type="number" id="tonnage2" step="any" placeholder="0.0">
         
-        <label for="totalTonnage">Enter the total tonnage:</label>
+        <label for="totalTonnage">Total Tonnage:</label>
         <input type="number" id="totalTonnage" step="any" placeholder="0.0">
         
-        <label for="gangs">Enter the number of gangs:</label>
+        <label for="gangs">Number of Gangs:</label>
         <input type="number" id="gangs" step="1" min="1" placeholder="1">
         
         <button onclick="calculateDifference()">Calculate Difference</button>
         
         <div id="result"></div>
+
+	<h3>Designed by Matt Clark</h3>
     </div>
 
     <script>
@@ -112,8 +115,9 @@
             const tonnageMinusFinishTonnage = totalTonnage - tonnage2;
             const hoursToGo = (tonnageMinusFinishTonnage / (tonnagePerHourPerGang || 1)).toFixed(2); // Prevent division by zero
 
-            // Calculate the estimated finish time
-            const estimatedFinishTime = new Date(date2.getTime() + hoursToGo * 60 * 60 * 1000);
+            // Calculate the estimated finish time divided by the number of gangs
+            const hoursToGoDividedByGangs = hoursToGo / numberOfGangs;
+            const estimatedFinishTime = new Date(date2.getTime() + hoursToGoDividedByGangs * 60 * 60 * 1000);
 
             // Display the result
             document.getElementById('result').innerText =
@@ -121,7 +125,7 @@
                 `Tonnage Difference: ${tonnageDiff} units.\n` +
                 `Tonnage per Gang: ${tonnagePerGang} units.\n` +
                 `Tonnage per Hour per Gang: ${tonnagePerHourPerGang} units.\n` +
-                `Total Tonnage Minus Finish Tonnage: ${totalTonnageMinusFinish} units.\n` +
+                `Tonnage Remaining: ${totalTonnageMinusFinish} units.\n` +
                 `Hours to Go: ${hoursToGo} hours.\n` +
                 `Estimated Finish Time: ${estimatedFinishTime.toLocaleString()}.`;
         }
