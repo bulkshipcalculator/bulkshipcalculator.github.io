@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date, Tonnage, and Gangs Difference Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Date, Tonnage, and Gangs Difference Calculator</h1>
+        
+        <label for="date1">Enter the first date:</label>
+        <input type="datetime-local" id="date1">
+        
+        <label for="date2">Enter the second date:</label>
+        <input type="datetime-local" id="date2">
+        
+        <label for="tonnage1">Enter the start tonnage:</label>
+        <input type="number" id="tonnage1" step="any" placeholder="0.0">
+        
+        <label for="tonnage2">Enter the finish tonnage:</label>
+        <input type="number" id="tonnage2" step="any" placeholder="0.0">
+        
+        <label for="totalTonnage">Enter the total tonnage:</label>
+        <input type="number" id="totalTonnage" step="any" placeholder="0.0">
+        
+        <label for="gangs">Enter the number of gangs:</label>
+        <input type="number" id="gangs" step="1" min="1" placeholder="1">
+        
+        <button onclick="calculateDifference()">Calculate Difference</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateDifference() {
+            // Get the values of the date, tonnage, total tonnage, and gangs inputs
+            const date1 = new Date(document.getElementById('date1').value);
+            const date2 = new Date(document.getElementById('date2').value);
+            const tonnage1 = parseFloat(document.getElementById('tonnage1').value);
+            const tonnage2 = parseFloat(document.getElementById('tonnage2').value);
+            const totalTonnage = parseFloat(document.getElementById('totalTonnage').value);
+            const numberOfGangs = parseInt(document.getElementById('gangs').value);
+
+            // Check if both dates, tonnages, and number of gangs are valid
+            if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+                document.getElementById('result').innerText = 'Please enter valid dates.';
+                return;
+            }
+            if (isNaN(tonnage1) || isNaN(tonnage2) || isNaN(totalTonnage)) {
+                document.getElementById('result').innerText = 'Please enter valid tonnages and total tonnage.';
+                return;
+            }
+            if (isNaN(numberOfGangs) || numberOfGangs <= 0) {
+                document.getElementById('result').innerText = 'Please enter a valid number of gangs.';
+                return;
+            }
+
+            // Calculate the difference in milliseconds
+            const diffMs = Math.abs(date2 - date1);
+
+            // Calculate total hours and round to the nearest hour
+            const totalHours = Math.round(diffMs / (1000 * 60 * 60));
+
+            // Calculate days and remaining hours
+            const diffDays = Math.floor(totalHours / 24);
+            const remainingHours = totalHours % 24;
+
+            // Calculate tonnage difference
+            const tonnageDiff = Math.abs(tonnage2 - tonnage1);
+
+            // Calculate tonnage per hour per gang
+            const totalHoursFloat = diffMs / (1000 * 60 * 60); // Total hours as a float
+            const tonnagePerHourPerGang = (tonnageDiff / totalHoursFloat / numberOfGangs).toFixed(2);
+
+            // Calculate tonnage per gang
+            const tonnagePerGang = (tonnageDiff / numberOfGangs).toFixed(2);
+
+            // Calculate total tonnage minus finish tonnage
+            const totalTonnageMinusFinish = (totalTonnage - tonnage2).toFixed(2);
+
+            // Calculate hours to go
+            const tonnageMinusFinishTonnage = totalTonnage - tonnage2;
+            const hoursToGo = (tonnageMinusFinishTonnage / (tonnagePerHourPerGang || 1)).toFixed(2); // Prevent division by zero
+
+            // Calculate the estimated finish time
+            const estimatedFinishTime = new Date(date2.getTime() + hoursToGo * 60 * 60 * 1000);
+
+            // Display the result
+            document.getElementById('result').innerText =
+                `Time Difference: ${diffDays} days, ${remainingHours} hours.\n` +
+                `Tonnage Difference: ${tonnageDiff} units.\n` +
+                `Tonnage per Gang: ${tonnagePerGang} units.\n` +
+                `Tonnage per Hour per Gang: ${tonnagePerHourPerGang} units.\n` +
+                `Total Tonnage Minus Finish Tonnage: ${totalTonnageMinusFinish} units.\n` +
+                `Hours to Go: ${hoursToGo} hours.\n` +
+                `Estimated Finish Time: ${estimatedFinishTime.toLocaleString()}.`;
+        }
+    </script>
+</body>
+</html>
