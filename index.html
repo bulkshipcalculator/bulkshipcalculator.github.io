@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date, Tonnage, and Gangs Difference Calculator</title>
+    <title>Bulk Ship Tonnage Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,7 +38,6 @@
     <div class="container">
         <h1>Bulk Ship Tonnage Calculator</h1>
 	
-        
         <label for="date1">Start Time:</label>
         <input type="datetime-local" id="date1">
         
@@ -61,7 +60,7 @@
         
         <div id="result"></div>
 
-	<h3>Designed by Matt Clark</h3>
+	<h5>Designed by Matt Clark</h5>
     </div>
 
     <script>
@@ -111,23 +110,21 @@
             // Calculate total tonnage minus finish tonnage
             const totalTonnageMinusFinish = (totalTonnage - tonnage2).toFixed(2);
 
-            // Calculate hours to go
-            const tonnageMinusFinishTonnage = totalTonnage - tonnage2;
-            const hoursToGo = (tonnageMinusFinishTonnage / (tonnagePerHourPerGang || 1)).toFixed(2); // Prevent division by zero
+            // Calculate hours to go (Tonnage Remaining / (Tonnage per Hour per Gang * Number of Gangs))
+            const hoursToGo = (totalTonnageMinusFinish / (tonnagePerHourPerGang * numberOfGangs)).toFixed(2); 
 
-            // Calculate the estimated finish time divided by the number of gangs
-            const hoursToGoDividedByGangs = hoursToGo / numberOfGangs;
-            const estimatedFinishTime = new Date(date2.getTime() + hoursToGoDividedByGangs * 60 * 60 * 1000);
+            // Calculate the estimated finish time
+            const estimatedFinishTime = new Date(date2.getTime() + hoursToGo * 60 * 60 * 1000);
 
             // Display the result
-            document.getElementById('result').innerText =
-                `Time Difference: ${diffDays} days, ${remainingHours} hours.\n` +
-                `Tonnage Difference: ${tonnageDiff} units.\n` +
-                `Tonnage per Gang: ${tonnagePerGang} units.\n` +
-                `Tonnage per Hour per Gang: ${tonnagePerHourPerGang} units.\n` +
-                `Tonnage Remaining: ${totalTonnageMinusFinish} units.\n` +
-                `Hours to Go: ${hoursToGo} hours.\n` +
-                `Estimated Finish Time: ${estimatedFinishTime.toLocaleString()}.`;
+            document.getElementById('result').innerHTML =
+                `Time Difference: ${diffDays} days, ${remainingHours} hours.<br>` +
+                `Tonnage Difference: ${tonnageDiff} mt<br>` +
+                `Tonnage per Gang: ${tonnagePerGang} mt<br>` +
+                `Tonnage per Hour per Gang: ${tonnagePerHourPerGang} mt<br>` +
+                `Tonnage Remaining: ${totalTonnageMinusFinish} mt<br>` +
+                `Hours to Go: ${hoursToGo} hours.<br>` +
+                `<strong>Estimated Finish Time: ${estimatedFinishTime.toLocaleString()}</strong>.`;
         }
     </script>
 </body>
