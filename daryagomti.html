@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Ship Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        label, input, select, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bulk Ship Calculator</h1>
+        <h2>ADM, Darya Gomti</h2>
+    
+        <label for="totalTonnage">Vessel Totals:</label>
+        <select id="totalTonnage" onchange="toggleCustomTonnage()">
+            <option value="19580">Vessel Total: 19,580 mt</option>
+            <option value="15080">ADM: 15,080 mt</option>
+            <option value="4500">Agrifeeds: 4,500 mt</option>
+            <option value="custom">Custom Tonnage</option>
+        </select>
+
+        <!-- Custom tonnage input field -->
+        <input type="number" id="customTonnage" class="hidden" placeholder="Enter custom tonnage" step="any">
+
+        <label for="date1">Start Time:</label>
+        <input type="datetime-local" id="date1">
+        
+        <label for="tonnage1">Start Tonnage:</label>
+        <input type="number" id="tonnage1" step="any" placeholder="0.0">
+        
+        <label for="date2">Latest Tonnage Update Time:</label>
+        <input type="datetime-local" id="date2">        
+        
+        <label for="tonnage2">Latest Tonnage:</label>
+        <input type="number" id="tonnage2" step="any" placeholder="0.0">
+                
+        <label for="gangs">Number of Gangs:</label>
+        <input type="number" id="gangs" step="1" min="1" placeholder="1">
+        
+        <button onclick="calculateDifference()">Calculate Finish Time</button>
+        
+        <div id="result"></div>
+    
+        <br>
+        <h5 style="color:grey;" align="center">Matthew Clark</h5>
+
+    </div>
+
+    <script>
+        function toggleCustomTonnage() {
+            const totalTonnageSelect = document.getElementById('totalTonnage');
+            const customTonnageInput = document.getElementById('customTonnage');
+            
+            if (totalTonnageSelect.value === 'custom') {
+                customTonnageInput.classList.remove('hidden');
+            } else {
+                customTonnageInput.classList.add('hidden');
+            }
+        }
+
+        function calculateDifference() {
+            const totalTonnageSelect = document.getElementById('totalTonnage');
+            let totalTonnage;
+            
+            if (totalTonnageSelect.value === 'custom') {
+                totalTonnage = parseFloat(document.getElementById('customTonnage').value);
+            } else {
+                totalTonnage = parseFloat(totalTonnageSelect.value);
+            }
+
+            const date1 = new Date(document.getElementById('date1').value);
+            const date2 = new Date(document.getElementById('date2').value);
+            const tonnage1 = parseFloat(document.getElementById('tonnage1').value);
+            const tonnage2 = parseFloat(document.getElementById('tonnage2').value);
+            const numberOfGangs = parseInt(document.getElementById('gangs').value);
+
+            if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+                document.getElementById('result').innerText = 'Please enter valid dates.';
+                return;
+            }
+            if (isNaN(tonnage1) || isNaN(tonnage2) || isNaN(totalTonnage)) {
+                document.getElementById('result').innerText = 'Please enter valid tonnages and total tonnage.';
+                return;
+            }
+            if (isNaN(numberOfGangs) || numberOfGangs <= 0) {
+                document.getElementById('result').innerText = 'Please enter a valid number of gangs.';
+                return;
+            }
+
+            const diffMs = Math.abs(date2 - date1);
+            const totalHours = Math.round(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(totalHours / 24);
+            const remainingHours = totalHours % 24;
+            const tonnageDiff = Math.abs(tonnage2 - tonnage1);
+            const totalHoursFloat = diffMs / (1000 * 60 * 60);
+            const tonnagePerHourPerGang = (tonnageDiff / totalHoursFloat / numberOfGangs).toFixed(2);
+            const tonnagePerGang = (tonnageDiff / numberOfGangs).toFixed(2);
+            const totalTonnageMinusFinish = (totalTonnage - tonnage2).toFixed(2);
+            const hoursToGo = (totalTonnageMinusFinish / (tonnagePerHourPerGang * numberOfGangs)).toFixed(2);
+            const estimatedFinishTime = new Date(date2.getTime() + hoursToGo * 60 * 60 * 1000);
+
+            document.getElementById('result').innerHTML =
+                `<strong>Estimated Finish Time: ${estimatedFinishTime.toLocaleString()}</strong>.<br>` +
+                `Time Difference: ${diffDays} days, ${remainingHours} hours.<br>` +
+                `Tonnage Difference: ${tonnageDiff} mt<br>` +
+                `Tonnage per Gang: ${tonnagePerGang} mt<br>` +
+                `Tonnage per Hour per Gang: ${tonnagePerHourPerGang} mt<br>` +
+                `Tonnage Remaining: ${totalTonnageMinusFinish} mt<br>` +
+                `Hours to Go: ${hoursToGo} hours.`;
+        }
+    </script>
+</body>
+</html>
