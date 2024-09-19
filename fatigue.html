@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatigue Risk Assessment Calculator</title>
+    <style>
+	body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Style for green box (low risk) */
+        #greenBox {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Style for orange box (medium risk) */
+        #orangeBox {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Style for red box (high risk) */
+        #redBox {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+    <script>
+        function calculateScore() {
+            // Get values from the dropdowns
+            var hoursWorked = parseInt(document.getElementById("hoursWorked").value);
+            var shiftLength = parseInt(document.getElementById("shiftLength").value);
+            var breakHours = parseInt(document.getElementById("breakHours").value);
+            var nightShifts = parseInt(document.getElementById("nightShifts").value);
+            var daysOff = parseInt(document.getElementById("daysOff").value);
+            var onCallDays = parseInt(document.getElementById("onCallDays").value);
+            var smokoDetails = parseInt(document.getElementById("smokoDetails").value);
+            var sickDays = parseInt(document.getElementById("sickDays").value);
+            var dayNightSwitch = parseInt(document.getElementById("dayNightSwitch").value);
+            
+            // Calculate total score
+            var totalScore = hoursWorked + shiftLength + breakHours + nightShifts + daysOff + onCallDays + smokoDetails + sickDays + dayNightSwitch;
+            
+            // Display the total score
+            document.getElementById("result").innerHTML = "Total Fatigue Risk Score: " + totalScore;
+
+            // Get greenBox, orangeBox, and redBox elements
+            var greenBox = document.getElementById("greenBox");
+            var orangeBox = document.getElementById("orangeBox");
+            var redBox = document.getElementById("redBox");
+
+            // Display appropriate box based on the score range
+            if (totalScore <= 11) {
+                greenBox.style.display = "block";
+                orangeBox.style.display = "none"; // Hide orange box
+                redBox.style.display = "none"; // Hide red box
+                greenBox.innerHTML = "Up to 11 points = low risk, No further action, but support.";
+            } else if (totalScore >= 12 && totalScore <= 17) {
+                orangeBox.style.display = "block";
+                greenBox.style.display = "none"; // Hide green box
+                redBox.style.display = "none"; // Hide red box
+                orangeBox.innerHTML = "12-17 points = medium risk, Refer to HSE team or Ports/Ops Manager.";
+            } else if (totalScore >= 18) {
+                redBox.style.display = "block";
+                greenBox.style.display = "none"; // Hide green box
+                orangeBox.style.display = "none"; // Hide orange box
+                redBox.innerHTML = "18 points or higher = high risk, No working permitted.";
+            } else {
+                greenBox.style.display = "none";
+                orangeBox.style.display = "none";
+                redBox.style.display = "none";
+            }
+        }
+
+        function printPage() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Fatigue Risk Assessment</h1>
+	<h3>Based on a 7-day work cycle</h3>
+	<h4>External factors to be considered i.e. realtionships, home life, financial issues, etc.</h4>	
+
+    <form id="fatigueAssessment">
+        <label for="employeeName">Employee Name:</label>
+        <input type="text" id="employeeName" name="employeeName" required>
+        
+        <br><br>
+
+        <label for="assessmentDate">Date of Assessment:</label>
+        <input type="date" id="assessmentDate" name="assessmentDate" required>
+        
+        <br><br>
+
+        <label for="hoursWorked">1. How many hours worked?</label>
+        <select id="hoursWorked">
+            <option value="1">Less than 50 hours worked</option>
+            <option value="2">50 - 70 hours worked*</option>
+            <option value="3">More than 70 hours worked*</option>
+        </select>
+	<br><br>
+		*Includes overtime, extended hours, time spent when called back to work and hours worked in secondary employment.
+	<br><br>
+
+        <label for="shiftLength">2. Upcoming shift length?</label>
+        <select id="shiftLength">
+            <option value="1">Shift length of 10 hours or less</option>
+            <option value="2">Shift length of up to 12 hours</option>
+            <option value="3">Shift length exceeding 12 hours</option>
+        </select>
+
+        <br><br>
+
+        <label for="breakHours">3. How many hours break between shifts?</label>
+        <select id="breakHours">
+            <option value="1">Min 12 hr break between shifts</option>
+            <option value="2">8-12 hour break between shifts</option>
+            <option value="3">Less than an 8 hr break</option>
+        </select>
+
+        <br><br>
+
+        <label for="nightShifts">4. Number of night shifts worked?</label>
+        <select id="nightShifts">
+            <option value="1">No night shifts</option>
+            <option value="2">Up to 3-night shifts</option>
+            <option value="3">4 or more night shifts</option>
+        </select>
+
+        <br><br>
+
+        <label for="daysOff">5. Number of days free from work?</label>
+        <select id="daysOff">
+            <option value="1">2 or more days free from work</option>
+            <option value="2">1 day free from work</option>
+            <option value="3">No days free from work</option>
+        </select>
+
+        <br><br>
+
+        <label for="onCallDays">6. Number of days on-call?</label>
+        <select id="onCallDays">
+            <option value="1">On-call no more than 3 out of 7 days</option>
+            <option value="2">On-call up to 5 days</option>
+            <option value="3">On-call more than 5 days</option>
+        </select>
+
+        <br><br>
+
+        <label for="smokoDetails">7. Smoko details?</label>
+        <select id="smokoDetails">
+            <option value="1">Short breaks taken during shift</option>
+            <option value="2">Single break taken during shift</option>
+            <option value="3">No breaks taken during shift</option>
+        </select>
+
+        <br><br>
+
+        <label for="sickDays">8. Sick Days Used?</label>
+        <select id="sickDays">
+            <option value="1">No recent sick days or absences</option>
+            <option value="2">1 Sick day or absence in the last 4 weeks</option>
+            <option value="3">2 or more sick days or absences in the last 4 weeks</option>
+        </select>
+
+        <br><br>
+
+        <label for="dayNightSwitch">9. Changing from day to night and vice versa?</label>
+        <select id="dayNightSwitch">
+            <option value="1">More than 48 hours rest when shift from nights to days and vice versa</option>
+            <option value="2">Less than 48 hrs but more than 24 hrs rest when shift from nights to days and vice versa</option>
+            <option value="3">24 hrs or less rest when shift from nights to days and vice versa</option>
+        </select>
+
+        <br><br>
+
+        <button type="button" onclick="calculateScore()">Calculate Total Score</button>
+    </form>
+
+    <br>
+
+    <p id="result"></p>
+
+    <!-- Green box for low risk -->
+    <div id="greenBox"></div>
+
+    <!-- Orange box for medium risk -->
+    <div id="orangeBox"></div>
+
+    <!-- Red box for high risk -->
+    <div id="redBox"></div>
+
+    <br>
+
+    <label for="assessorName">Name of employee completing this fatigue risk assessment:</label>
+    <input type="text" id="assessorName" name="assessorName" required>
+
+    <br><br>
+
+    <label for="assessorPosition">Position:</label>
+    <input type="text" id="assessorPosition" name="assessorPosition" required>
+
+    <br><br>
+
+    <button type="button" onclick="printPage()">Print</button>
+</div>
+</body>
+</html>
